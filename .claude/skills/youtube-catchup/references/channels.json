@@ -1,0 +1,10 @@
+{
+  "channels": [
+    {
+      "name": "Example Channel",
+      "channel_id": "UC...",
+      "priority": "high"
+    }
+  ],
+  "_comment": "Add YouTube channels. Priority: high, medium, low. Get channel_id from YouTube URL."
+}

@@ -1,0 +1,18 @@
+# Personal directories (create these locally)
+.claude/memories/
+.claude/learning-sessions/
+my-vault/
+
+# Ignore real projects, but keep example-project/
+ideas/*
+!ideas/example-project/
+spaces/*
+!spaces/example-project/
+
+# OS
+.DS_Store
+
+# Editor
+*.swp
+*.swo
+*~

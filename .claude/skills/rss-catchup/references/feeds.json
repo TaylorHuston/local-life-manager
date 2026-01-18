@@ -1,0 +1,10 @@
+{
+  "feeds": [
+    {
+      "name": "Example Blog",
+      "url": "https://example.com/feed.xml",
+      "category": "tech"
+    }
+  ],
+  "_comment": "Add your RSS feeds here. Categories help organize summaries."
+}

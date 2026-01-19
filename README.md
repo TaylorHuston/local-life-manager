@@ -23,7 +23,7 @@ A structured approach to:
 ## What Can It Do?
 
 ### Spec Driven Development
-- Contains an updated version of the skills and workflows for my [Claude Code SDD Plugin](https://github.com/TaylorHuston/ai-toolkit).
+- Contains an updated version of the skills and workflows from my [Claude Code SDD Plugin](https://github.com/TaylorHuston/ai-toolkit).
 - Skills to create detailed specs, plans, tasks and then implement those plans in a structured way.
 - Also includes a "/teach" mode where the LLM will walk you through building the spec yourself, great for a truly personalized tutorial.
 

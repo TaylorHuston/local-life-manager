@@ -2,14 +2,14 @@
 
 LLM. Get it? Because it uses an LLM to help manage your life?... I'll see myself out now.
 
-A framework for AI-assisted life and project management using Claude Code. This is still very  bespoke to my workflows, Obsidian vault layout, Obsidian plugins, etc, so your probably can't just clone it and start using it right away, but it should be enough of a starting point for you to tweak for yourself.
+A framework for AI-assisted life and project management using Claude Code. This is still very bespoke to my workflows, Obsidian vault layout, Obsidian plugins, etc, so you probably can't just clone it and start using it right away, but it should be enough of a starting point for you to tweak for yourself.
 
 ## What This Is
 
 A structured approach to:
 - **Project planning** with briefs, specs, and issue tracking
 - **Personal knowledge management** with daily journals and learning systems
-- **AI-powered workflows** via 49 custom Claude Code skills
+- **AI-powered workflows** via 50 custom Claude Code skills
 - **Multi-project coordination** with shared standards and templates
 
 ## Prerequisites
@@ -21,9 +21,9 @@ A structured approach to:
 ## Directory Structure
 
 ```
-life-framework/
+local-life-manager/
 ├── .claude/
-│   ├── skills/              # 49 custom Claude Code skills
+│   ├── skills/              # 50 custom Claude Code skills
 │   ├── agents/              # 26 specialized agent definitions
 │   ├── docs/                # System documentation
 │   ├── memories/            # Persistent AI context about you (create this)
@@ -50,8 +50,8 @@ life-framework/
 ### 1. Clone and Initialize
 
 ```bash
-git clone https://github.com/YOU/life-framework.git
-cd life-framework
+git clone https://github.com/TaylorHuston/local-life-manager.git
+cd local-life-manager
 
 # Create personal directories
 mkdir -p .claude/memories .claude/learning-sessions
@@ -144,7 +144,7 @@ These skills need your data:
 ### Starting a Session
 
 ```bash
-cd life-framework
+cd local-life-manager
 claude
 ```
 

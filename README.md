@@ -4,6 +4,8 @@ LLM. Get it? Because it uses an LLM to help manage your life?... I'll see myself
 
 A framework for AI-assisted life and project management using Claude Code. This is still very bespoke to my workflows, Obsidian vault layout, Obsidian plugins, etc, so you probably can't just clone it and start using it right away, but it should be enough of a starting point for you to tweak for yourself.
 
+See: [I'm Letting Claude Manage My Life (Sort Of)](https://taylorhuston.me/2026/01/13/Claude-Life-Management.html)
+
 ## What This Is
 
 A structured approach to:
@@ -17,6 +19,31 @@ A structured approach to:
 - [Claude Code](https://claude.ai/code) CLI installed
 - [Obsidian](https://obsidian.md/) for personal knowledge management
 - Git
+
+## What Can It Do?
+
+### Spec Driven Development
+- Contains an updated version of the skills and workflows for my [Claude Code SDD Plugin](https://github.com/TaylorHuston/ai-toolkit).
+- Skills to create detailed specs, plans, tasks and then implement those plans in a structured way.
+- Also includes a "/teach" mode where the LLM will walk you through building the spec yourself, great for a truly personalized tutorial.
+
+### Personal Tutor
+- The LLM can create study sessions for you, tracking what topics you've already worked on.
+- Help you study any topic you want, taking in your previous study sessions and existing notes into account.
+
+### Summarize YouTube Channels and RSS Feeds
+- Constantly find yourself drowning in all of the different things you feel like you need to watch and read to stay on top of things?
+- The LLM can track a list of YouTube channels you want to follow, download the transcripts, and create summaries for each of them in your vault.
+- The LLM can track a list of RSS feeds you want to follow, read the latest entries and create summaries for each article in your vaut.
+- Then you can read these summaries and determine which ones are actually worth your time to go watch or read.
+
+### Journal, Daily Review, Weekly Review
+- Commands to help you keep track of your daily journal.
+- Have it help you with your daily review each evening.
+- Have it help you plan your day each morning.
+- Have it help you reflect on the previous week and set goals for the upcoming week every Sunday.
+
+_Note that a lot of this could still be considered a beta at best, this is definitely a work in progress. Skills and workflows are changing frequently, these instructions might not always be up to date, but you should be able to ask Claude itself what it can do in this project._
 
 ## Directory Structure
 

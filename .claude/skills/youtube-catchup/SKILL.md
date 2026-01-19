@@ -24,7 +24,13 @@ pip install yt-dlp
 Use `scripts/youtube_helper.py` for fetching data:
 
 ```bash
-# List recent videos from a channel (returns IDs and titles)
+# Get NEW videos uploaded since a date (default operation)
+python3 scripts/youtube_helper.py new @handle YYYY-MM-DD [processed_ids]
+
+# Backfill: get all unprocessed videos regardless of date (explicit request only)
+python3 scripts/youtube_helper.py backfill @handle [limit] [processed_ids]
+
+# Fast channel list (no date info - rarely needed)
 python3 scripts/youtube_helper.py channel @handle [limit]
 
 # Get video metadata
@@ -37,6 +43,8 @@ python3 scripts/youtube_helper.py transcript VIDEO_ID
 python3 scripts/youtube_helper.py full VIDEO_ID
 ```
 
+**Important:** The `new` command checks upload dates to avoid backfilling old content. Use `backfill` only when explicitly requested.
+
 ## Workflow
 
 ### Phase 1: Discovery (Coordinator)
@@ -44,16 +52,19 @@ python3 scripts/youtube_helper.py full VIDEO_ID
 1. **Load configuration**
    - Read channel list from `references/channels.json`
    - Read processed videos list from `references/state.json`
+   - Note the `last_run` date for filtering
 
 2. **For each enabled channel:**
-   - Run: `python3 scripts/youtube_helper.py channel @handle 50`
-   - Filter out videos already in `processed_videos` list
+   - Run: `python3 scripts/youtube_helper.py new @handle {last_run} {processed_ids}`
+   - This returns ONLY videos uploaded since `last_run` that aren't in processed list
    - **Skip videos under 5 minutes** (likely promotional/announcement fluff)
    - Collect list of new videos needing summarization
 
 3. **Report findings to user:**
    - Show count of new videos per channel
    - Ask user how to proceed (all, select channels, limit count)
+
+**Backfill mode:** If user explicitly requests backfilling old videos, use `backfill` command instead of `new`.
 
 ### Phase 2: Summarization (Haiku Subagents)
 
@@ -241,20 +252,27 @@ Related: [[Video Title]]
 ## Example Coordinator Flow
 
 ```
-1. Load channels.json, state.json
-2. Fetch video lists:
-   - Theo: 5 new videos
-   - HealthyGamerGG: 3 new videos
-   - LangChain: 2 new videos
+1. Load channels.json, state.json (last_run: 2026-01-16)
+2. Fetch NEW videos (uploaded since last_run):
+   python3 youtube_helper.py new @t3dotgg 2026-01-16 id1,id2,...
+   - Theo: 2 new videos
+   - HealthyGamerGG: 1 new video
+   - LangChain: 0 new videos
 3. User confirms: "Process all"
-4. Batch 1 - spawn 4 Haiku agents:
+4. Batch 1 - spawn 3 Haiku agents:
    - Task(video_1, theo, ...)
    - Task(video_2, theo, ...)
-   - Task(video_3, theo, ...)
-   - Task(video_4, theo, ...)
-5. Wait for batch 1 completion
-6. Batch 2 - spawn 4 more...
-7. Continue until done
-8. Update state.json with successful IDs
-9. Report: "Processed 10 videos, 0 failures"
+   - Task(video_3, healthygamer, ...)
+5. Wait for batch completion
+6. Update state.json with successful IDs
+7. Update last_run to today's date
+8. Report: "Processed 3 videos, 0 failures"
+```
+
+**For explicit backfill:**
+```
+User: "backfill Gamers Nexus videos"
+1. Use: python3 youtube_helper.py backfill @GamersNexus 50 id1,id2,...
+2. This returns ALL unprocessed videos regardless of upload date
+3. Proceed with normal summarization workflow
 ```

@@ -1,6 +1,8 @@
-# 
+# Local Life Manager
 
-A framework for AI-assisted life and project management using Claude Code. This is still fairly bespoke to my workflows and things, but should be a starting point for you to tweak for yourself.
+LLM. Get it? Because it uses an LLM to help manage your life?... I'll see myself out now.
+
+A framework for AI-assisted life and project management using Claude Code. This is still very  bespoke to my workflows, Obsidian vault layout, Obsidian plugins, etc, so your probably can't just clone it and start using it right away, but it should be enough of a starting point for you to tweak for yourself.
 
 ## What This Is
 
@@ -258,6 +260,13 @@ Skills aren't just prompts—they're structured multi-step processes with:
 - Review and prune `.claude/memories/` periodically
 - Keep your vault's daily notes current
 - Update skill configs as your feeds/channels change
+
+## Limitations and Future Plans
+
+- It's entirely reliant on my workflows and Obsidian setup, I'd like to generalize it more.
+- It's entirely based on Claude Code, I'd like to generalize it to work better with any LLM, including local ones, possible folding in my [Local Ollama Chatbot experiment](https://github.com/TaylorHuston/ollama-chat).
+- The YouTube and RSS catchup skills both just store their state in a giant JSON file, which probably won't scale.
+- As the size of the vault grows I might look into adding a RAG to help the LLM search through it easier.
 
 ## License
 

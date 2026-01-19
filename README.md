@@ -73,13 +73,15 @@ mkdir my-vault
 **Recommended vault structure:**
 ```
 my-vault/
-├── 01 Inbox/           # Capture location
-├── 02 Calendar/        # Daily notes (YYYY-MM-DD.md)
-├── 03 Tags/            # Tag index pages
-├── 04 Personal/        # Personal notes
-├── 05 Projects/        # Project notes
-├── 06 Knowledge Base/  # Accumulated knowledge
-└── 09 System/          # Templates
+├── 01 Inbox/           # Capture location for new notes
+├── 02 Calendar/        # Daily notes (YYYY-MM-DD.md), weekly reviews (YYYY-Www.md)
+├── 03 TaskNotes/       # Tasks (each task = note with #task tag)
+├── 04 Tags/            # Tag index pages with Dataview queries
+├── 05 Personal/        # Personal notes, decisions, career, health
+├── 06 Projects/        # Active projects
+├── 07 Knowledge Base/  # Courses, videos, tech notes
+├── 08 AI Research/     # AI/ML research, experiments, agent patterns
+└── 09 System/          # Templates, Classes, assets
 ```
 
 ### 3. Create Your Context

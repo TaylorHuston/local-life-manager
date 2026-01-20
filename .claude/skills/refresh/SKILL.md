@@ -2,7 +2,7 @@
 name: refresh
 description: "Silently refresh AI context by reading project configuration and guidelines. Use when starting a new conversation, after context loss, or before major tasks."
 model: claude-haiku-4-5-20251001
-allowed-tools: Read, Glob
+allowed-tools: Read, Glob, Bash(date:*, ls:*)
 ---
 
 # /refresh
@@ -21,25 +21,27 @@ Silently reload project context by reading critical configuration files.
 
 ```bash
 Read: CLAUDE.md
-Read: about-me.md
+Read: .claude/memories/about-taylor.md
 ```
 
 **Error if CLAUDE.md missing**: "CLAUDE.md not found"
 
-### 2. Read Shared Documentation
+### 2. Read Recent Memories
+
+Get today's date and read memories from the last 3 days:
+
+```bash
+Bash: date +%Y-%m-%d  # Get today's date
+Bash: ls .claude/memories/2026-01-*.json | tail -10  # Recent memory files
+```
+
+Read any memory files from the last 3 days (by filename date prefix).
+
+### 3. Read Shared Documentation
 
 ```bash
 Glob: shared/docs/**/*.md
 # Read each found file
-```
-
-Skip silently if not found.
-
-### 3. Read Resource Documentation
-
-```bash
-Glob: resources/**/*.md
-# Read key research and style guides
 ```
 
 Skip silently if not found.
@@ -64,9 +66,10 @@ Context refreshed
 
 | Category | Files |
 |----------|-------|
-| Core | CLAUDE.md, about-me.md |
+| Core | CLAUDE.md |
+| Profile | .claude/memories/about-taylor.md |
+| Memories | .claude/memories/YYYY-MM-DD-*.json (last 3 days) |
 | Shared | shared/docs/**/*.md |
-| Resources | resources/**/*.md |
 | Git | Last 3 commits |
 
 ## Error Handling

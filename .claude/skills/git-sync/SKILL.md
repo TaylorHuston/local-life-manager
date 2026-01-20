@@ -1,21 +1,21 @@
 ---
-name: spaces-sync
-description: "Sync spaces/ directory with Projects Index - clone missing, push/pull all branches"
+name: git-sync
+description: "Sync all git repos - my-life top repo and spaces/ projects"
 model: claude-haiku-4-5-20251001
 allowed-tools: Read, Glob, Bash
 ---
 
-# /spaces-sync
+# /git-sync
 
-Synchronize the `spaces/` directory with the Projects Index in CLAUDE.md.
+Synchronize all git repositories: the top-level `my-life` repo and the `spaces/` projects.
 
 ## Usage
 
 ```bash
-/spaces-sync              # Check status of all repos and branches
-/spaces-sync --pull       # Pull updates for all branches
-/spaces-sync --push       # Push local commits for all branches
-/spaces-sync --clone      # Clone missing repos
+/git-sync              # Check status of all repos and branches
+/git-sync --pull       # Pull updates for all branches
+/git-sync --push       # Push local commits for all branches
+/git-sync --clone      # Clone missing repos
 ```
 
 ## Implementation
@@ -23,17 +23,22 @@ Synchronize the `spaces/` directory with the Projects Index in CLAUDE.md.
 This skill uses a Python script for reliable validation:
 
 ```bash
-python .claude/skills/spaces-sync/scripts/sync.py --check   # Status report
-python .claude/skills/spaces-sync/scripts/sync.py --pull    # Pull behind branches
-python .claude/skills/spaces-sync/scripts/sync.py --push    # Push ahead branches
-python .claude/skills/spaces-sync/scripts/sync.py --clone   # Clone missing repos
-python .claude/skills/spaces-sync/scripts/sync.py --json    # JSON output
-python .claude/skills/spaces-sync/scripts/sync.py --suggest-additions  # YAML for untracked repos
+python .claude/skills/git-sync/scripts/sync.py --check   # Status report
+python .claude/skills/git-sync/scripts/sync.py --pull    # Pull behind branches
+python .claude/skills/git-sync/scripts/sync.py --push    # Push ahead branches
+python .claude/skills/git-sync/scripts/sync.py --clone   # Clone missing repos
+python .claude/skills/git-sync/scripts/sync.py --json    # JSON output
+python .claude/skills/git-sync/scripts/sync.py --suggest-additions  # YAML for untracked repos
 ```
 
-Run the script from the ideas repo root directory.
+Run the script from the my-life repo root directory.
 
 ## What It Validates
+
+### Top-Level Repo (my-life)
+- Branch status (ahead/behind/dirty/diverged)
+- Uncommitted changes
+- Sync status with remote
 
 ### Index → Filesystem
 - Each project with `code:` path exists in spaces/
@@ -48,8 +53,13 @@ Run the script from the ideas repo root directory.
 
 ```
 ============================================================
-SPACES SYNC REPORT
+GIT SYNC REPORT
 ============================================================
+
+## Top-Level Repo (my-life)
+
+  my-life (1 branch)
+    ✓ main - Up to date
 
 ## Issues
 
@@ -76,6 +86,7 @@ SPACES SYNC REPORT
 ------------------------------------------------------------
 SUMMARY
 ------------------------------------------------------------
+  Top-level repo:   1 (main: up to date)
   Indexed repos:    15 (14 ok, 1 missing)
   Remote-only:      6
   Not in index:     2
@@ -113,7 +124,7 @@ SUMMARY
 Use `--suggest-additions` to get YAML:
 
 ```bash
-python .claude/skills/spaces-sync/scripts/sync.py --suggest-additions
+python .claude/skills/git-sync/scripts/sync.py --suggest-additions
 ```
 
 Output:

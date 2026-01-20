@@ -50,7 +50,7 @@ This directory contains 49 skills (slash commands) that extend Claude Code's cap
 | `/readmes` | Check all READMEs for accuracy and consistency |
 | `/process-inbox` | Process notes in inbox folder |
 | `/refresh` | Silently refresh AI context by reading project configuration |
-| `/spaces-sync` | Sync spaces/ directory with Projects Index |
+| `/git-sync` | Sync all git repos - my-life top repo and spaces/ projects |
 | `/improve-processes` | Reflect on session and suggest improvements to tooling |
 | `/life-planning` | Cross-repo life and project planning |
 
@@ -684,16 +684,16 @@ Reads core configuration (CLAUDE.md, about-me.md). Gets recent git activity. Sil
 
 **Use when:** Starting new conversation, after context loss, before major tasks.
 
-### `/spaces-sync`
-**Sync spaces/ directory with Projects Index**
+### `/git-sync`
+**Sync all git repos - my-life top repo and spaces/ projects**
 
-Checks status of all repos and branches. Safe operations (no force push).
+Checks status of all repos and branches, including the top-level my-life repository. Safe operations (no force push).
 
 ```bash
-/spaces-sync              # Check status
-/spaces-sync --pull       # Pull updates
-/spaces-sync --push       # Push local commits
-/spaces-sync --clone      # Clone missing repos
+/git-sync              # Check status
+/git-sync --pull       # Pull updates
+/git-sync --push       # Push local commits
+/git-sync --clone      # Clone missing repos
 ```
 
 ### `/improve-processes`

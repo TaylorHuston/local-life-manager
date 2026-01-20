@@ -36,7 +36,11 @@ python3 scripts/rss_helper.py article URL
 2. **For each enabled feed:**
    - Run: `python3 scripts/rss_helper.py feed "FEED_URL" 20`
    - Filter to articles published since last run
-   - Check if article note already exists in my-vault (by URL in media field or filename)
+   - **Deduplicate against existing notes:**
+     ```bash
+     grep -rl "media: {article_url}" "my-vault/07 Knowledge Base/Capture/Articles/"
+     ```
+   - If a note with that URL exists: skip (already processed, may be missing from state)
 
 3. **For each new article:**
    - If feed provides full content, use that
@@ -73,7 +77,7 @@ For discovery notes, choose tags based on what the discovery is (e.g., a Python 
 
 ## Article Note Format
 
-Create in: `my-vault/06 Knowledge Base/Capture/Articles/[Feed Name]/[Title].md`
+Create in: `my-vault/07 Knowledge Base/Capture/Articles/[Feed Name]/[Title].md`
 
 Sanitize filenames: remove special characters, limit length to ~80 chars.
 
@@ -190,6 +194,6 @@ Related: [[Article Title]]
 ## Path Handling
 
 **CRITICAL - Never escape spaces with backslashes:**
-- Use paths exactly as shown: `my-vault/06 Knowledge Base/...` (with literal spaces)
+- Use paths exactly as shown: `my-vault/07 Knowledge Base/...` (with literal spaces)
 - The Write tool handles spaces correctly - backslash escaping creates literal `\` characters in directory names
-- When using Bash commands, wrap paths in double quotes: `"my-vault/06 Knowledge Base/..."`
+- When using Bash commands, wrap paths in double quotes: `"my-vault/07 Knowledge Base/..."`

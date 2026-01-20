@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Spaces Sync Tool
+Git Sync Tool
 
-Synchronizes the spaces/ directory with the Projects Index in CLAUDE.md.
+Synchronizes all git repositories: the top-level my-life repo and spaces/ projects.
 Validates bidirectionally: index → filesystem and filesystem → index.
 
 Usage:
@@ -69,13 +69,14 @@ class RepoInfo:
 
 @dataclass
 class SyncReport:
+    top_level_repo: Optional[RepoInfo] = None
     repos: list = field(default_factory=list)
     not_in_index: list = field(default_factory=list)
     summary: dict = field(default_factory=dict)
 
 
 def find_repo_root() -> Path:
-    """Find the ideas repo root by looking for CLAUDE.md"""
+    """Find the my-life repo root by looking for CLAUDE.md"""
     current = Path(__file__).resolve()
     for parent in [current] + list(current.parents):
         if (parent / "CLAUDE.md").exists():
@@ -83,7 +84,7 @@ def find_repo_root() -> Path:
     # Fallback to environment or current directory
     if "IDEAS_ROOT" in os.environ:
         return Path(os.environ["IDEAS_ROOT"])
-    raise FileNotFoundError("Could not find CLAUDE.md - run from ideas repo")
+    raise FileNotFoundError("Could not find CLAUDE.md - run from my-life repo")
 
 
 def parse_projects_index(claude_md_path: Path) -> list[dict]:
@@ -201,9 +202,9 @@ def get_branch_status(repo_path: Path, branch: str) -> BranchInfo:
 
 
 def check_repo(repo_path: Path, expected_remote: Optional[str] = None,
-               index_status: str = "unknown") -> RepoInfo:
+               index_status: str = "unknown", name_override: Optional[str] = None) -> RepoInfo:
     """Check status of a single repository"""
-    name = repo_path.name
+    name = name_override if name_override else repo_path.name
     info = RepoInfo(name=name, status=RepoStatus.OK, path=str(repo_path),
                     index_status=index_status)
 
@@ -321,6 +322,34 @@ def generate_report(repo_root: Path, do_pull: bool = False, do_push: bool = Fals
     spaces_path = repo_root / "spaces"
     claude_md_path = repo_root / "CLAUDE.md"
 
+    # Check top-level repo first
+    top_level_info = check_repo(repo_root, name_override="my-life", index_status="top-level")
+
+    # Handle branch operations for top-level repo
+    if top_level_info.status == RepoStatus.OK:
+        for branch_info in top_level_info.branches:
+            if branch_info.status == BranchStatus.BEHIND and do_pull:
+                print(f"Pulling my-life/{branch_info.name}...")
+                if pull_branch(repo_root, branch_info.name):
+                    branch_info.status = BranchStatus.UP_TO_DATE
+                    branch_info.message = f"Pulled {branch_info.behind} commits"
+                    branch_info.behind = 0
+
+            elif branch_info.status == BranchStatus.AHEAD and do_push:
+                print(f"Pushing my-life/{branch_info.name}...")
+                if push_branch(repo_root, branch_info.name):
+                    branch_info.status = BranchStatus.UP_TO_DATE
+                    branch_info.message = f"Pushed {branch_info.ahead} commits"
+                    branch_info.ahead = 0
+
+            elif branch_info.status == BranchStatus.LOCAL_ONLY and do_push:
+                print(f"Pushing new branch my-life/{branch_info.name}...")
+                if push_new_branch(repo_root, branch_info.name):
+                    branch_info.status = BranchStatus.UP_TO_DATE
+                    branch_info.message = "Pushed new branch"
+
+    report.top_level_repo = top_level_info
+
     # Parse index
     projects = parse_projects_index(claude_md_path)
 
@@ -398,8 +427,27 @@ def generate_report(repo_root: Path, do_pull: bool = False, do_push: bool = Fals
                 "remote": remote
             })
 
-    # Generate summary
+    # Generate summary (include top-level repo in counts)
+    all_repos_for_branches = report.repos + ([report.top_level_repo] if report.top_level_repo else [])
+
+    # Get top-level repo branch status summary
+    top_level_branch_status = "unknown"
+    if report.top_level_repo and report.top_level_repo.branches:
+        main_branch = next((b for b in report.top_level_repo.branches if b.name == "main"), None)
+        if main_branch:
+            if main_branch.status == BranchStatus.UP_TO_DATE:
+                top_level_branch_status = "up to date"
+            elif main_branch.status == BranchStatus.DIRTY:
+                top_level_branch_status = f"{main_branch.dirty_files} uncommitted"
+            elif main_branch.status == BranchStatus.AHEAD:
+                top_level_branch_status = f"{main_branch.ahead} to push"
+            elif main_branch.status == BranchStatus.BEHIND:
+                top_level_branch_status = f"{main_branch.behind} to pull"
+            else:
+                top_level_branch_status = main_branch.status.value
+
     report.summary = {
+        "top_level_status": top_level_branch_status,
         "total_indexed": len([r for r in report.repos if r.status != RepoStatus.REMOTE_ONLY]),
         "remote_only": len([r for r in report.repos if r.status == RepoStatus.REMOTE_ONLY]),
         "ok": len([r for r in report.repos if r.status == RepoStatus.OK]),
@@ -407,23 +455,23 @@ def generate_report(repo_root: Path, do_pull: bool = False, do_push: bool = Fals
         "not_in_index": len(report.not_in_index),
         "branches_ahead": sum(
             len([b for b in r.branches if b.status == BranchStatus.AHEAD])
-            for r in report.repos
+            for r in all_repos_for_branches if r
         ),
         "branches_behind": sum(
             len([b for b in r.branches if b.status == BranchStatus.BEHIND])
-            for r in report.repos
+            for r in all_repos_for_branches if r
         ),
         "branches_dirty": sum(
             len([b for b in r.branches if b.status == BranchStatus.DIRTY])
-            for r in report.repos
+            for r in all_repos_for_branches if r
         ),
         "branches_diverged": sum(
             len([b for b in r.branches if b.status == BranchStatus.DIVERGED])
-            for r in report.repos
+            for r in all_repos_for_branches if r
         ),
         "branches_local_only": sum(
             len([b for b in r.branches if b.status == BranchStatus.LOCAL_ONLY])
-            for r in report.repos
+            for r in all_repos_for_branches if r
         ),
     }
 
@@ -448,9 +496,28 @@ def format_report(report: SyncReport) -> str:
     """Format report as human-readable text"""
     lines = []
     lines.append("=" * 60)
-    lines.append("SPACES SYNC REPORT")
+    lines.append("GIT SYNC REPORT")
     lines.append("=" * 60)
     lines.append("")
+
+    # Show top-level repo first
+    if report.top_level_repo:
+        lines.append("## Top-Level Repo (my-life)")
+        lines.append("")
+        repo = report.top_level_repo
+        if repo.status == RepoStatus.OK:
+            branch_count = len(repo.branches)
+            branch_summary = f"({branch_count} branch{'es' if branch_count != 1 else ''})"
+            lines.append(f"  {repo.name} {branch_summary}")
+            for branch in repo.branches:
+                symbol = format_status_symbol(branch.status)
+                msg = f" - {branch.message}" if branch.message else ""
+                lines.append(f"    {symbol} {branch.name}{msg}")
+        else:
+            lines.append(f"  {repo.name}")
+            lines.append(f"    Status: {repo.status.value}")
+            lines.append(f"    {repo.message}")
+        lines.append("")
 
     # Group repos by status
     ok_repos = [r for r in report.repos if r.status == RepoStatus.OK]
@@ -499,6 +566,7 @@ def format_report(report: SyncReport) -> str:
     lines.append("SUMMARY")
     lines.append("-" * 60)
     s = report.summary
+    lines.append(f"  Top-level repo:   my-life (main: {s['top_level_status']})")
     lines.append(f"  Indexed repos:    {s['total_indexed']} ({s['ok']} ok, {s['missing']} missing)")
     lines.append(f"  Remote-only:      {s['remote_only']}")
     lines.append(f"  Not in index:     {s['not_in_index']}")
@@ -515,18 +583,7 @@ def format_report(report: SyncReport) -> str:
 
 def serialize_report(report: SyncReport) -> dict:
     """Convert report to JSON-serializable dict"""
-    def serialize_enum(obj):
-        if isinstance(obj, Enum):
-            return obj.value
-        raise TypeError(f"Object of type {type(obj)} is not JSON serializable")
-
-    result = {
-        "repos": [],
-        "not_in_index": report.not_in_index,
-        "summary": report.summary
-    }
-
-    for repo in report.repos:
+    def serialize_repo(repo: RepoInfo) -> dict:
         repo_dict = {
             "name": repo.name,
             "status": repo.status.value,
@@ -546,13 +603,23 @@ def serialize_report(report: SyncReport) -> dict:
                 "dirty_files": branch.dirty_files,
                 "message": branch.message
             })
-        result["repos"].append(repo_dict)
+        return repo_dict
+
+    result = {
+        "top_level_repo": serialize_repo(report.top_level_repo) if report.top_level_repo else None,
+        "repos": [],
+        "not_in_index": report.not_in_index,
+        "summary": report.summary
+    }
+
+    for repo in report.repos:
+        result["repos"].append(serialize_repo(repo))
 
     return result
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Sync spaces/ with Projects Index")
+    parser = argparse.ArgumentParser(description="Sync all git repos - my-life and spaces/")
     parser.add_argument("--check", action="store_true", help="Check status only (default)")
     parser.add_argument("--pull", action="store_true", help="Pull behind branches")
     parser.add_argument("--push", action="store_true", help="Push ahead/local-only branches")

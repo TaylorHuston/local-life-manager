@@ -20,7 +20,9 @@ Good morning! Run the morning check-in.
 
 3. **Setup today's journal**
    - Check if today's entry exists
-   - If not: create from template (see `references/template.md`)
+   - If not: create from template at `my-vault/09 System/Templates/Daily Template.md`
+     - Note: Template uses Templater syntax - resolve `<% tp.date... %>` to actual dates
+     - Set `created` and `modified` to today's date
    - Show today's highlight or ask: "What's your main focus today?"
 
 4. **Check learning plan** (`.claude/learning-sessions/learning-plan.json`)

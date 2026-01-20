@@ -60,7 +60,15 @@ python3 scripts/youtube_helper.py full VIDEO_ID
    - **Skip videos under 5 minutes** (likely promotional/announcement fluff)
    - Collect list of new videos needing summarization
 
-3. **Report findings to user:**
+3. **Deduplicate against existing notes:**
+   - Before processing, check if a note with that video URL already exists:
+     ```bash
+     grep -rl "youtube.com/watch?v={video_id}" "my-vault/07 Knowledge Base/Capture/Videos/"
+     ```
+   - If a note exists: skip that video (already processed, just missing from state)
+   - This prevents duplicates even if state.json is out of sync
+
+4. **Report findings to user:**
    - Show count of new videos per channel
    - Ask user how to proceed (all, select channels, limit count)
 
@@ -68,13 +76,13 @@ python3 scripts/youtube_helper.py full VIDEO_ID
 
 ### Phase 2: Summarization (Haiku Subagents)
 
-4. **Spawn subagents for summarization:**
+5. **Spawn subagents for summarization:**
    - Use Task tool with `model: haiku` and `subagent_type: general-purpose`
    - Process 4-6 videos in parallel (multiple Task calls in single message)
    - Each subagent handles ONE video with fresh context
    - Wait for batch to complete before starting next batch
 
-5. **Subagent prompt template:**
+6. **Subagent prompt template:**
 ```
 Summarize this YouTube video and create a note.
 
@@ -83,7 +91,7 @@ CHANNEL: {channel_name}
 TAGS: {tags}
 OUTPUT_PATH: {output_path}
 
-IMPORTANT: Use the OUTPUT_PATH exactly as given with literal spaces (e.g., "my-vault/06 Knowledge Base/...").
+IMPORTANT: Use the OUTPUT_PATH exactly as given with literal spaces (e.g., "my-vault/07 Knowledge Base/...").
 Do NOT escape spaces with backslashes - this creates directories with literal backslash characters in the name.
 
 STEPS:
@@ -143,11 +151,11 @@ Related:
 
 ### Phase 3: Completion (Coordinator)
 
-6. **Collect results:**
+7. **Collect results:**
    - Track which videos succeeded/failed
    - Report any failures to user
 
-7. **Update state:**
+8. **Update state:**
    - Add successfully processed video IDs to `references/state.json`
    - Report summary of what was processed
 
@@ -159,14 +167,14 @@ Each channel in `references/channels.json` has a `tags` array specifying default
 
 ## Output Paths
 
-Video notes: `my-vault/06 Knowledge Base/Capture/Videos/{channel_folder}/{title}.md`
+Video notes: `my-vault/07 Knowledge Base/Capture/Videos/{channel_folder}/{title}.md`
 Discovery notes: `my-vault/01 Inbox/{name}.md`
 
 **CRITICAL - Path Handling:**
 - **NEVER escape spaces with backslashes** in paths passed to subagents or the Write tool
-- Use paths exactly as shown: `my-vault/06 Knowledge Base/...` (with literal spaces)
+- Use paths exactly as shown: `my-vault/07 Knowledge Base/...` (with literal spaces)
 - The Write tool handles spaces correctly - backslash escaping creates literal `\` characters in directory names
-- When using Bash commands, wrap paths in double quotes: `"my-vault/06 Knowledge Base/..."`
+- When using Bash commands, wrap paths in double quotes: `"my-vault/07 Knowledge Base/..."`
 
 ## Channel Config
 

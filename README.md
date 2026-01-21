@@ -4,7 +4,7 @@ LLM. Get it? Because it uses an LLM to help manage your life?... I'll see myself
 
 A framework for AI-assisted life and project management using Claude Code. This is still very bespoke to my workflows, Obsidian vault layout, Obsidian plugins, etc, so you probably can't just clone it and start using it right away, but it should be enough of a starting point for you to tweak for yourself.
 
-See: [I'm Letting Claude Manage My Life (Sort Of)](https://taylorhuston.me/2026/01/13/Claude-Life-Management.html)
+See: [I'm Letting Claude Manage My Life (Sort Of)](https://taylorhuston.me/2026/01/13/Claude-Life-Management.html) and [Local Life Management (LLM? Get It?)](https://taylorhuston.me/2026/01/21/Local-Life-Management.html)
 
 ## What This Is
 

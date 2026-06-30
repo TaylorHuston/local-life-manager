@@ -1,5 +1,7 @@
 # Local Life Manager
 
+UPDATE: This hasn't been updated in some time. I'm working on something that is the same concept, but LLM agnostic and with a different approach to SDD that I am actually calling Story-Driven-Development. Stay tuned for details, but consider this repo deprecated.
+
 LLM. Get it? Because it uses an LLM to help manage your life?... I'll see myself out now.
 
 A framework for AI-assisted life and project management using Claude Code. This is still very bespoke to my workflows, Obsidian vault layout, Obsidian plugins, etc, so you probably can't just clone it and start using it right away, but it should be enough of a starting point for you to tweak for yourself.
